@@ -47,15 +47,21 @@ for ema in selected_emas:
         st.line_chart(df['Ema_'+str(ema)])
 
 # Trading Strategy Implementation
+# Trading Strategy Implementation
 pos = 0
 num = 0
 percentchange = []
 
 for i in df.index:
-    cmin=min(df["Ema_3"][i],df["Ema_5"][i],df["Ema_8"][i],df["Ema_10"][i],df["Ema_12"][i],df["Ema_15"][i],)
-    cmax=max(df["Ema_30"][i],df["Ema_35"][i],df["Ema_40"][i],df["Ema_45"][i],df["Ema_50"][i],df["Ema_60"][i],)
+    ema_short = [df["Ema_"+str(ema)][i] for ema in selected_emas if ema <= 15]
+    ema_long = [df["Ema_"+str(ema)][i] for ema in selected_emas if ema >= 30]
 
-    close=df["Adj Close"][i]
+    if len(ema_short)==0 or len(ema_long)==0:  # Ensure there is at least one EMA selected in both short and long term
+        continue
+
+    cmin = min(ema_short)
+    cmax = max(ema_long)
+    close = df["Adj Close"][i]
 
     if(cmin>cmax):
         if(pos==0):
@@ -76,6 +82,7 @@ for i in df.index:
         percentchange.append(pc)
 
     num+=1
+
 
 # Analyzing the Trading Strategy
 gains=0
